@@ -54,7 +54,8 @@ func HandleMessage(cfg config.Config, message *tgbotapi.Message) {
 	var id = uuid.New().String()
 
 	// Форматирование даты
-	createdAt := time.Unix(int64(message.Date), 0).Format(time.RFC3339)
+	loc, _ := time.LoadLocation("Europe/Chisinau")
+	createdAt := time.Unix(int64(message.Date), 0).In(loc).Format(time.RFC3339)
 
 	// Формирование ссылки на сообщение в чате
 	var messageLink string
