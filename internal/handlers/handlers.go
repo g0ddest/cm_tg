@@ -1,11 +1,12 @@
 package handlers
 
 import (
-	"cm_water_tg/internal/config"
+	"cm_tg/internal/config"
 	"encoding/json"
 	"fmt"
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"log"
+	"strings"
 	"time"
 
 	"github.com/aws/aws-sdk-go/aws"
@@ -34,11 +35,15 @@ type Source struct {
 func HandleMessage(cfg config.Config, message *tgbotapi.Message) {
 	// Проверка ID отправителя
 	isAllowed := false
-	for _, allowedID := range cfg.AllowedUserIDs {
-		if message.From.ID == int(allowedID) {
-			isAllowed = true
-			break
+	if cfg.AllowedUserIDs != nil && len(cfg.AllowedUserIDs) > 0 {
+		for _, allowedID := range cfg.AllowedUserIDs {
+			if message.From.ID == int(allowedID) {
+				isAllowed = true
+				break
+			}
 		}
+	} else {
+		isAllowed = true
 	}
 
 	if !isAllowed {
@@ -70,7 +75,7 @@ func HandleMessage(cfg config.Config, message *tgbotapi.Message) {
 	// Создание сообщения для SQS
 	sqsMsg := Message{
 		ID:         id,
-		Service:    "WATER",
+		Service:    cfg.ServiceName,
 		CreatedAt:  createdAt,
 		RawMessage: message.Text,
 		Source: Source{
@@ -84,7 +89,7 @@ func HandleMessage(cfg config.Config, message *tgbotapi.Message) {
 	// Подготовка элемента для DynamoDB
 	dynamoMsg := map[string]*dynamodb.AttributeValue{
 		"id":         {S: aws.String(id)},
-		"mp":         {S: aws.String("water_ms:" + id)}, // Ключ партиции включает water_ms и идентификатор
+		"mp":         {S: aws.String(strings.ToLower(cfg.ServiceName) + "_ms:" + id)},
 		"service":    {S: aws.String(sqsMsg.Service)},
 		"created_at": {S: aws.String(sqsMsg.CreatedAt)},
 		"source": {

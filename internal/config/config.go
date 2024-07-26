@@ -8,6 +8,7 @@ import (
 )
 
 type Config struct {
+	ServiceName        string
 	TelegramToken      string
 	DynamoDBTableName  string
 	SQSQueueURL        string
@@ -21,14 +22,17 @@ func LoadConfig() Config {
 	allowedUserIDsStr := os.Getenv("ALLOWED_USER_IDS")
 	allowedUserIDs := []int64{}
 
-	for _, idStr := range strings.Split(allowedUserIDsStr, ",") {
-		id, err := strconv.ParseInt(idStr, 10, 64)
-		if err == nil {
-			allowedUserIDs = append(allowedUserIDs, id)
+	if allowedUserIDsStr != "" {
+		for _, idStr := range strings.Split(allowedUserIDsStr, ",") {
+			id, err := strconv.ParseInt(idStr, 10, 64)
+			if err == nil {
+				allowedUserIDs = append(allowedUserIDs, id)
+			}
 		}
 	}
 
 	config := Config{
+		ServiceName:        os.Getenv("SERVICE_NAME"),
 		TelegramToken:      os.Getenv("TELEGRAM_TOKEN"),
 		DynamoDBTableName:  os.Getenv("DYNAMODB_TABLE_NAME"),
 		SQSQueueURL:        os.Getenv("SQS_QUEUE_URL"),

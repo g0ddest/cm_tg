@@ -1,8 +1,8 @@
 package main
 
 import (
-	"cm_water_tg/internal/bot"
-	"cm_water_tg/internal/config"
+	"cm_tg/internal/bot"
+	"cm_tg/internal/config"
 	"log"
 	"net/http"
 

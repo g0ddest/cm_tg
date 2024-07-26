@@ -1,8 +1,8 @@
 package bot
 
 import (
-	"cm_water_tg/internal/config"
-	"cm_water_tg/internal/handlers"
+	"cm_tg/internal/config"
+	"cm_tg/internal/handlers"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 	"log"
 )

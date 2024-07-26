@@ -1,4 +1,4 @@
-module cm_water_tg
+module cm_tg
 
 go 1.20
 
